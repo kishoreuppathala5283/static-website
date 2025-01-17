@@ -1,0 +1,52 @@
+Resources:
+  WebsiteCodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: StaticWebsitePipeline
+      RoleArn: arn:aws:iam::711387094662:role/CodePipelineRole
+      ArtifactStore:
+        Type: S3
+        Location: kishore-bucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHubSource
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: '1'
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: kishoreuppathala5283
+                Repo: static-website
+                Branch: main
+                OAuthToken: !Ref GitHubOAuthToken
+        - Name: Build
+          Actions:
+            - Name: CodeBuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ProjectName: !Ref StaticWebsiteBuildProject
+        - Name: Deploy
+          Actions:
+            - Name: S3DeployAction
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: '1'
+              InputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                BucketName: kishore-bucket
+                Extract: 'true'

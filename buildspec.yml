@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Building the website..."
+      - # Add your build steps here if necessary (e.g., minification, bundling, etc.)
+      - echo "Build completed."
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: /* # Adjust as necessary
